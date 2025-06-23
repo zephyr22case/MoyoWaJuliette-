@@ -1,16 +1,53 @@
-import os from telegram import Update from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+# Bidhaa zinazopatikana
+BIDHAA = """
+📦 *Bidhaa Zilizopo:*
+- 📱 Simu Aina Zote  
+- 💻 Computer  
+- 🧴 Malabo ya Ndani  
+- 👔 Nguo za Kiume  
+- 👗 Nguo za Kike  
+- 👟 Viatu Aina Zote  
+- 💄 Cosmetics  
+- 🪥 Dawa za Meno  
+- 🍯 Bee Pollen  
+"""
 
-bidhaa = { "Simu Aina Zote": "Tunauza simu za aina zote - bei kuanzia TSh 150,000.", "Computer": "Laptops na desktops kwa matumizi ya nyumbani na ofisi.", "Malabo ya Ndani": "Manukato na mafuta ya kupaka ya hali ya juu.", "Nguo za Kiume": "Nguo kali za kisasa kwa wanaume – mashati, suruali na zaidi.", "Nguo za Kike": "Nguo bomba kwa wanawake – magauni, tops, sketi nk.", "Viatu Aina Zote": "Viatu vya kike na kiume – casual, official, sports shoes.", "Cosmetics": "Bidhaa bora za urembo – lipsticks, lotions, skincare nk.", "Dawa za Meno": "Dawa za meno za asili zinazotunza afya ya kinywa.", "Bee Pollen": "Bidhaa ya afya kutoka kwenye asali – kuongeza nguvu na kinga." }
+MALIPO = """
+💳 *Jinsi ya Kulipa:*
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE): msg = ( "Karibu kwenye Zephyr Products Bot \U0001F6CD️\n\n" "Tuma /bidhaa kuona orodha ya bidhaa au /malipo kujua jinsi ya kulipa.\n" ) await update.message.reply_text(msg, parse_mode="Markdown")
+Lipa kwa M-Pesa kupitia namba: *0740233767*
 
-async def bidhaa_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE): msg = "\U0001F4E6 Bidhaa Zetu:\n" for name, desc in bidhaa.items(): msg += f"\n\u2728 {name}\n{desc}\n" await update.message.reply_text(msg, parse_mode="Markdown")
+✅ Baada ya malipo, tuma risiti yako kwa Telegram au WhatsApp ili uthibitishiwe.
 
-async def malipo(update: Update, context: ContextTypes.DEFAULT_TYPE): msg = ( "\U0001F4B3 Malipo yanafanyika kupitia M-Pesa:\n" "0740233767\n" "Tunatuma bidhaa nchi nzima \U0001F1F9\U0001F1FF!\n" ) await update.message.reply_text(msg, parse_mode="Markdown")
+🌍 Tunatuma bidhaa nchi nzima 🇹🇿
+"""
 
-app = ApplicationBuilder().token(BOT_TOKEN).build() app.add_handler(CommandHandler("start", start)) app.add_handler(CommandHandler("bidhaa", bidhaa_cmd)) app.add_handler(CommandHandler("malipo", malipo))
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Karibu kwenye *Zephyr Products Bot!* 🛍️\n\nTuma amri:\n"
+        "/bidhaa - kuona bidhaa\n"
+        "/malipo - maelezo ya malipo",
+        parse_mode="Markdown"
+    )
 
-app.run_polling()
+async def bidhaa(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(BIDHAA, parse_mode="Markdown")
 
+async def malipo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(MALIPO, parse_mode="Markdown")
+
+if __name__ == '__main__':
+    import os
+
+    TOKEN = os.getenv("BOT_TOKEN")
+
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("bidhaa", bidhaa))
+    app.add_handler(CommandHandler("malipo", malipo))
+
+    app.run_polling()
