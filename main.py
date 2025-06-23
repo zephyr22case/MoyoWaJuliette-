@@ -1,45 +1,53 @@
-import os
-from telegram import Update, ReplyKeyboardMarkup
+import logging
+from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
-# Bot token kutoka BotFather
-TOKEN = os.environ.get("BOT_TOKEN")  # Hakikisha umeweka token kama secret kwenye Render
+# Configure logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
-# Orodha ya bidhaa
-PRODUCTS = {
-    "Simu Aina Zote": "Tunauza simu za aina mbalimbali kama Samsung, iPhone, Tecno, Infinix n.k.",
-    "Computer": "Laptop na desktop za kisasa zenye ubora wa hali ya juu.",
-    "Malabo ya Ndani": "Mapazia, mablanketi, mikeka, mito n.k.",
-    "Nguo za Kiume": "Mashati, suruali, suti, t-shirt na jeans.",
-    "Nguo za Kike": "Gauni, sketi, blauzi, top, na mitindo ya kisasa.",
-    "Viatu Aina Zote": "Viatu vya michezo, rasmi, ndala na vya kawaida."
-}
+# Your bot token
+BOT_TOKEN = "weka_token_yako_hapa"
 
 # Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[item] for item in PRODUCTS.keys()]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        "Karibu Zephyr Products! 🛍️\nChagua bidhaa unayotaka kujua zaidi:",
-        reply_markup=reply_markup
+        "Karibu Zephyr Products Assistant! 😊\n\nAndika jina la bidhaa unayotafuta..."
     )
 
-# Handler wa bidhaa
+# Help command
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Unaweza kuuliza kuhusu:\n- Simu\n- Kompyuta\n- Malabo ya ndani\n- Nguo\n- Viatu\n\nTuma tu jina la bidhaa!"
+    )
+
+# Generic message handler
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
-    if text in PRODUCTS:
-        await update.message.reply_text(PRODUCTS[text])
+    text = update.message.text.lower()
+
+    # Sample product replies (unaweza kupanua)
+    if "simu" in text:
+        reply = "Tunauza simu aina zote! Samsung, iPhone, Tecno, Infinix, n.k.\nWasiliana: 0740 233 767"
+    elif "kompyuta" in text or "laptop" in text:
+        reply = "Tunatoa laptops zenye ubora – Dell, HP, Lenovo n.k.\nDM kwa bei!"
+    elif "viatu" in text:
+        reply = "Tunazo viatu vya wanaume na wanawake. Tuma size yako na style upendayo 😊"
+    elif "nguo" in text:
+        reply = "Nguo mpya zimewasili! Zipo za kiume na za kike. Uliza sasa!"
     else:
-        await update.message.reply_text("Samahani, tafadhali chagua bidhaa kutoka kwenye menyu. 🙏")
+        reply = "Samahani, tafadhali eleza zaidi kuhusu bidhaa unayotafuta 🛍️"
 
-# Endapo bot inahitaji PORT kwa hosting, Render atahitaji uishughulikie
-port = os.environ.get('PORT')
+    await update.message.reply_text(reply)
 
+# Main function to run the bot
 if __name__ == '__main__':
-    app = ApplicationBuilder().token(TOKEN).build()
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    print("Zephyr Products Bot is running... ✅")
+    print("🤖 Zephyr Products Bot is running...")
     app.run_polling()
