@@ -1,15 +1,13 @@
 # Python bytecode
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
+
 
 # Environment files
-*.env
+
 .env
 
 # SQLite database (kama unatumia kwa caching)
-*.sqlite3
+
 
 # Editor settings
 .vscode/
@@ -27,8 +25,8 @@ ENV/
 env/
 
 # Logs
-*.log
+
 
 # Secrets and tokens
 secrets.json
-*.secret
+
