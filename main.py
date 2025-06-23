@@ -9,7 +9,7 @@ logging.basicConfig(
 )
 
 # Weka token yako halisi hapa
-BOT_TOKEN = 
+BOT_TOKEN =
 "8083188846:AAH7EysBhg_TroN3NEq0rWid0ZOA8GJ8QRk"
 
 # /start
