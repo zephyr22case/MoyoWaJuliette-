@@ -1,9 +1,12 @@
 import logging
 import os
 from dotenv import load_dotenv
-from telegram import Update, InputMediaPhoto
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram import Update
+from telegram.ext import (
+    ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+)
 
+# Load environment variables from .env file
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -15,7 +18,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# Dummy data kwa bidhaa na picha
+# Data za bidhaa na picha
 PRODUCT_IMAGES = {
     "simu": "https://example.com/simu.jpg",
     "computer": "https://example.com/computer.jpg",
@@ -28,6 +31,19 @@ PRODUCT_IMAGES = {
     "bee_pollen": "https://example.com/bee_pollen.jpg",
 }
 
+# Bei za bidhaa
+PRODUCT_PRICES = {
+    "simu": "Tsh 300,000 - 1,000,000",
+    "computer": "Tsh 500,000 - 2,500,000",
+    "malabo": "Tsh 10,000 - 50,000",
+    "nguo_kiume": "Tsh 20,000 - 100,000",
+    "nguo_kike": "Tsh 20,000 - 150,000",
+    "viatu": "Tsh 30,000 - 120,000",
+    "cosmetics": "Tsh 5,000 - 80,000",
+    "dawa_za_meno": "Tsh 5,000 - 30,000",
+    "bee_pollen": "Tsh 15,000 - 60,000",
+}
+
 # Hali ya manunuzi dummy
 PURCHASE_STATUS = {
     "1234": "Inasafirishwa 🚚",
@@ -37,15 +53,17 @@ PURCHASE_STATUS = {
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Karibu Zephyr Products Assistant!\nTuma /help kuona amri zote."
+        "👋 Karibu Zephyr Products Assistant!\n"
+        "Tuma /help kuona amri zote."
     )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Amri za Zephyr Products Bot:\n"
+        "📜 Amri za Zephyr Products Bot:\n"
         "/start - Karibu\n"
         "/help - Orodha ya amri\n"
         "/bidhaa - Orodha ya bidhaa\n"
+        "/bei - Orodha ya bidhaa na bei zao\n"
         "/picha <jina> - Onyesha picha ya bidhaa\n"
         "/malipo - Maelezo ya malipo\n"
         "/mawasiliano - Jinsi ya kuwasiliana\n"
@@ -68,6 +86,12 @@ async def bidhaa(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Tumia /picha <jina> kuona picha ya bidhaa"
     )
     await update.message.reply_text(bidhaa_za_kuuzwa)
+
+async def bei(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = "💰 Bei za bidhaa Zephyr Products:\n\n"
+    for product, price in PRODUCT_PRICES.items():
+        message += f"- {product.replace('_', ' ').title()}: {price}\n"
+    await update.message.reply_text(message)
 
 async def picha(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) == 0:
@@ -106,17 +130,15 @@ async def hali(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Samahani, hatujapata taarifa za oda hiyo.")
 
-# Inbox handler - anza kwa simple echo kama mfano
 async def inbox(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Tafadhali tuma ujumbe wako. Tutajibu haraka kadri tuwezavyo."
     )
 
-# Catch user text messages to inbox
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.message.from_user
     text = update.message.text
-    # Hapa unaweza kuongeza code kuhifadhi message kwenye DB au kutuma email
+    # Hapa unaweza kuongeza kuhifadhi ujumbe DB au kuwasilisha kwa admin
     print(f"Ujumbe kutoka kwa {user.first_name} ({user.id}): {text}")
     await update.message.reply_text("Asante kwa ujumbe wako, tutakujibu hivi karibuni.")
 
@@ -126,13 +148,13 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("bidhaa", bidhaa))
+    app.add_handler(CommandHandler("bei", bei))
     app.add_handler(CommandHandler("picha", picha))
     app.add_handler(CommandHandler("malipo", malipo))
     app.add_handler(CommandHandler("mawasiliano", mawasiliano))
     app.add_handler(CommandHandler("hali", hali))
     app.add_handler(CommandHandler("inbox", inbox))
 
-    # Handler ya ujumbe wa kawaida
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     print("🤖 Zephyr Products Bot iko online...")
