@@ -1,5 +1,30 @@
-.env
+# Python
 __pycache__/
-*.pyc
-*.log
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env
+*.sqlite3
+
+# VSCode / IDEs
+.vscode/
+.idea/
+
+# Mac/Linux system files
+.DS_Store
+
+# Pyenv
+.python-version
+
+# Virtualenv
 venv/
+ENV/
+env/
+
+# Log files
+*.log
+
+# Token/Secrets (zisitumwe GitHub)
+secrets.json
+*.secret
