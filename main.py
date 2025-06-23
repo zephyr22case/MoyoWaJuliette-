@@ -1,53 +1,45 @@
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import os
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
-# Bidhaa zinazopatikana
-BIDHAA = """
-📦 *Bidhaa Zilizopo:*
-- 📱 Simu Aina Zote  
-- 💻 Computer  
-- 🧴 Malabo ya Ndani  
-- 👔 Nguo za Kiume  
-- 👗 Nguo za Kike  
-- 👟 Viatu Aina Zote  
-- 💄 Cosmetics  
-- 🪥 Dawa za Meno  
-- 🍯 Bee Pollen  
-"""
+# Bot token kutoka BotFather
+TOKEN = os.environ.get("BOT_TOKEN")  # Hakikisha umeweka token kama secret kwenye Render
 
-MALIPO = """
-💳 *Jinsi ya Kulipa:*
+# Orodha ya bidhaa
+PRODUCTS = {
+    "Simu Aina Zote": "Tunauza simu za aina mbalimbali kama Samsung, iPhone, Tecno, Infinix n.k.",
+    "Computer": "Laptop na desktop za kisasa zenye ubora wa hali ya juu.",
+    "Malabo ya Ndani": "Mapazia, mablanketi, mikeka, mito n.k.",
+    "Nguo za Kiume": "Mashati, suruali, suti, t-shirt na jeans.",
+    "Nguo za Kike": "Gauni, sketi, blauzi, top, na mitindo ya kisasa.",
+    "Viatu Aina Zote": "Viatu vya michezo, rasmi, ndala na vya kawaida."
+}
 
-Lipa kwa M-Pesa kupitia namba: *0740233767*
-
-✅ Baada ya malipo, tuma risiti yako kwa Telegram au WhatsApp ili uthibitishiwe.
-
-🌍 Tunatuma bidhaa nchi nzima 🇹🇿
-"""
-
+# Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [[item] for item in PRODUCTS.keys()]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        "Karibu kwenye *Zephyr Products Bot!* 🛍️\n\nTuma amri:\n"
-        "/bidhaa - kuona bidhaa\n"
-        "/malipo - maelezo ya malipo",
-        parse_mode="Markdown"
+        "Karibu Zephyr Products! 🛍️\nChagua bidhaa unayotaka kujua zaidi:",
+        reply_markup=reply_markup
     )
 
-async def bidhaa(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(BIDHAA, parse_mode="Markdown")
+# Handler wa bidhaa
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+    if text in PRODUCTS:
+        await update.message.reply_text(PRODUCTS[text])
+    else:
+        await update.message.reply_text("Samahani, tafadhali chagua bidhaa kutoka kwenye menyu. 🙏")
 
-async def malipo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(MALIPO, parse_mode="Markdown")
+# Endapo bot inahitaji PORT kwa hosting, Render atahitaji uishughulikie
+port = os.environ.get('PORT')
 
 if __name__ == '__main__':
-    import os
-
-    TOKEN = os.getenv("BOT_TOKEN")
-
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("bidhaa", bidhaa))
-    app.add_handler(CommandHandler("malipo", malipo))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
+    print("Zephyr Products Bot is running... ✅")
     app.run_polling()
