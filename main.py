@@ -9,7 +9,7 @@ logging.basicConfig(
 )
 
 # Your bot token
-BOT_TOKEN = "weka_token_yako_hapa"
+BOT_TOKEN = 8083188846:AAHlzOKtx_5vCoKGXME-CNHdH_ROqY130VI
 
 # Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
